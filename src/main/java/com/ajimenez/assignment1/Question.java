@@ -4,17 +4,21 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+// Functionality shared by multiple choice and single choice questions
 abstract class Question {
     protected String question = "N/A";
     protected String[] choices = {"Choices not configured"};
-    private Set<Integer> answers = new HashSet<Integer>();
+    // Indices of which choices make up the correct answer
+    private Set<Integer> answers = new HashSet<Integer>(); 
 
+    // Require question message, choices, and answer on initialization
     Question(String question, String[] choices, Set<Integer> answers) {
         setQuestion(question);
         setChoices(choices);
         setAnswers(answers);
     }
 
+    // Alternate constructor where only 1 choice is the answer
     Question(String question, String[] choices, int answer) {
         setQuestion(question);
         setChoices(choices);
@@ -30,6 +34,12 @@ abstract class Question {
         this.answers.addAll(answers);
     }
 
+    private void setAnswer(Integer answer) {
+        this.answers.clear();
+        this.answers.add(answer);
+    }
+
+    // Select and return a random combination of choices
     Set<Integer> randomAnswer() {
         Random r = new Random();
         Set<Integer> thisAnswer = new HashSet<>();
@@ -40,11 +50,6 @@ abstract class Question {
         }
 
         return thisAnswer;
-    }
-
-    private void setAnswer(Integer answer) {
-        this.answers.clear();
-        this.answers.add(answer);
     }
 
     String[] getChoices() {
@@ -80,6 +85,7 @@ class MultipleChoiceQuestion extends Question {
         super(question, choices, answer);
     }
 
+    // Override to instruct to choose multiple answers
     void print() {
         System.out.println(this.question);
         System.out.println("Choose all answers that apply:");
@@ -90,17 +96,12 @@ class MultipleChoiceQuestion extends Question {
 }
 
 class SingleChoiceQuestion extends Question {
-    SingleChoiceQuestion(String question, String[] choices, Set<Integer> answers) throws Exception {
-        super(question, choices, answers);
-        if (answers.size() > 1) {
-            throw new Exception("SingleChoiceQuestion may only have 1 answer");
-        }     
-    }
-
+    // Only allow the single answer constructor
     SingleChoiceQuestion(String question, String[] choices, int answer) {
         super(question, choices, answer);
     }
 
+    // Override to select a single choice as the answer
     Set<Integer> randomAnswer() {
         Random r = new Random();
         Set<Integer> thisAnswer = new HashSet<>();
@@ -108,6 +109,7 @@ class SingleChoiceQuestion extends Question {
         return thisAnswer;
     }
 
+    // Override to instruct to choose a single answer
     void print() {
         System.out.println(this.question);
         System.out.println("Choose 1 answer:");
